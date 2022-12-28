@@ -10,7 +10,7 @@
 
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
 	let
 		system = "x86_64-linux";
 		pkgs = import nixpkgs {
@@ -28,6 +28,7 @@
 				home-manager.nixosModules.home-manager {
 					home-manager.useGlobalPkgs = true;
 					home-manager.useUserPackages = true;
+					extraSpecialArgs = { inherit inputs; };
 					home-manager.users.drmoscovium = {
 						imports = [ ./home.nix ];
 					};

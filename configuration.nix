@@ -27,6 +27,9 @@ in
   nixpkgs.overlays = [
    (import ./overlays/discord.nix)
    (import ./overlays/electron.nix)
+   (final: prev: {
+      dwm = prev.dwm.overrideAttrs (old: { src = /home/drmoscovium/dwm ;});
+    })
   ];
 
 
@@ -37,6 +40,9 @@ in
 
 
   # Nvidia Settings, Move this to it's own file
+# environment.systemPackages = [ nvidia-offload ];
+  hardware.nvidia.modesetting.enable = true;
+  hardware.opengl.enable = true;
   hardware.nvidia.prime = {
     offload.enable = true;
 
@@ -100,6 +106,10 @@ in
 
 
   services = {
+	dwm-status = {
+		enable = true;
+		order = ["audio" "backlight" "battery" "cpu_load" "network" "time"];
+	};
 	xserver = {
  		videoDrivers = [ "nvidia" ];
 		enable = true;
@@ -113,7 +123,7 @@ in
   };
 
   # Enable the X11 windowing system.
-  # services.xserver.enable = true;
+ # services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
   # services.xserver.displayManager.gdm.enable = true;
@@ -127,6 +137,16 @@ in
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+
+
+  services.blueman = {
+	enable = true;
+  };
+
+  hardware.bluetooth = {
+	enable = true;
+
+  };
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -170,6 +190,7 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+  nvidia-offload
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   wget
   firefox-wayland
@@ -179,8 +200,7 @@ in
   wlr-randr
   wl-clipboard
   electron
-  pkgs.gnome3.gnome-tweaks
-  libadwaita
+  dwm-status
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

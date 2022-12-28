@@ -19,7 +19,21 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  imports = [ ./modules/default.nix ];
 
-  home.packages = with pkgs; [ htop ];
+  config.modules = {
+	hyprland.enable = true;
+
+  };
+
+
+  home.packages = with pkgs; [ htop 
+	st
+	dmenu
+	kdeconnect
+	wofi
+	hyprland
+
+  ];
   
 }
