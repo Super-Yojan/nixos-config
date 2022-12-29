@@ -19,21 +19,22 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  imports = [ ./modules/default.nix ];
+  # imports = [ ./modules/default.nix ];
 
-  config.modules = {
-	hyprland.enable = true;
-
-  };
-
+  #  dwm = {
+  #   enable = true;
+  #  };
 
   home.packages = with pkgs; [ htop 
-	st
-	dmenu
-	kdeconnect
-	wofi
-	hyprland
-
+    obsidian
+    neofetch
+    brave
+    spotify
+    discord
+    vscode
+    st
+    dmenu
+    kdeconnect
   ];
   
 }

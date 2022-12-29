@@ -1,14 +1,12 @@
 self: super: {
-	dwm = super.dwm.overrideAttrs(
+	st = super.st.overrideAttrs(
 	_:{
 		src = super.fetchFromGitHub{
 			owner = "Super-Yojan";
-			repo = "dwm";
-			rev = "abee295539094ab954a69dc1aabeb5fe1bfaf704";
+			repo = "st";
+      rev = "f77e9a1c3b41c9971a5574e3d8e25e511f0f5fe7";
 		  sha256 = "sha256-Ejd+mrsUaL3qOVOElvAKNx/g5TLo6wRjAUjQBWhzujs=";
 		};
 	}
 );
 }
-
-
