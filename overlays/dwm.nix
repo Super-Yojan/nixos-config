@@ -1,6 +1,6 @@
 self: super: {
 	dwm = super.dwm.overrideAttrs(
-	_:{
+	old :{
 		src = super.fetchFromGitHub{
 			owner = "Super-Yojan";
 			repo = "dwm";

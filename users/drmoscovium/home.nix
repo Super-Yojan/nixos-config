@@ -25,6 +25,15 @@
   #   enable = true;
   #  };
 
+
+programs.obs-studio = {
+    enable = true;
+    plugins = with pkgs.obs-studio-plugins; [
+      wlrobs
+      obs-gstreamer
+    ];
+  };
+
   home.packages = with pkgs; [ htop 
     obsidian
     neofetch
@@ -35,6 +44,15 @@
     st
     dmenu
     kdeconnect
+    mpv
+    libsForQt5.kdenlive
+    gimp
+
+
+    # development
+    rustc
+    gcc
+    python3
   ];
   
 }

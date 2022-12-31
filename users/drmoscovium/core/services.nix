@@ -1,4 +1,4 @@
-{config, pkgs, ...}:
+{config, pkgs, lib, ...}:
 
 {
 
@@ -10,7 +10,7 @@
     
 
     # enable blueman for windo managers only
-    # blueman.enable = true;
+    blueman.enable = true;
 
 
 
@@ -28,11 +28,12 @@
     };
 
 
+  
     # xserver services 
     xserver = {
       layout = "us";
       xkbVariant = "";
-      videoDrivers = [ "nvidia" ];
+      videoDrivers = lib.mkDefault [ "nvidia" ];
 		  enable = true;
 		  displayManager = {
 			  lightdm = {
@@ -45,8 +46,12 @@
         };
 		  };
 		  desktopManager.plasma5.enable = true;
-      windowManager.dwm.enable = true;
  		  libinput.enable = true;
+      screenSection = ''
+  Option         "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
+  Option         "AllowIndirectGLXProtocol" "off"
+  Option         "TripleBuffer" "on"
+'';
     };
 
 

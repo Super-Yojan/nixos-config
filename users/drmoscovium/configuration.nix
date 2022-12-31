@@ -2,7 +2,8 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
+
 
 let
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
@@ -10,7 +11,7 @@ let
     export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
     export __GLX_VENDOR_LIBRARY_NAME=nvidia
     export __VK_LAYER_NV_optimus=NVIDIA_only
-    exec "$@"
+    exec -a "$0" "$@"
   '';
   user="drmoscovium";
 in
@@ -32,6 +33,7 @@ in
   nixpkgs.overlays = [
    (import ../../overlays/discord.nix)
    (import ../../overlays/electron.nix)
+   (import ../../overlays/dwm.nix)
   ];
 
 
@@ -65,11 +67,6 @@ in
   };
 
 
-
-
-
-
-
   # Enable sound with pipewire.
   sound.enable = true;
   hardware.pulseaudio.enable = false;
@@ -81,18 +78,19 @@ in
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+  
   environment.systemPackages = with pkgs; [
   nvidia-offload
   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   wget
   firefox-wayland
   unzip
+  zip
   git
+
   virt-manager
-  wlr-randr
   wl-clipboard
   electron
-  dwm-status
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -104,9 +102,19 @@ in
   # };
 
 
+
+
+    programs.sway.enable=true;
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
+  specialisation = {
+    external-display.configuration = {
+      system.nixos.tags = [ "external-display" ];
+      hardware.nvidia.prime.offload.enable = lib.mkForce false;
+      hardware.nvidia.powerManagement.enable = lib.mkForce false;
+    };
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -131,7 +139,8 @@ in
 
   # TODO for docker 
   # virtualisation.docker.enable = true;
-
+virtualisation.libvirtd.enable = true;
+programs.dconf.enable = true;
 
   nix = {
 	package = pkgs.nixFlakes;
