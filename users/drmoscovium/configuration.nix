@@ -4,39 +4,32 @@
 
 { config, pkgs, lib, ... }:
 
-
 let
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
     export __NV_PRIME_RENDER_OFFLOAD=1
     export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
     export __GLX_VENDOR_LIBRARY_NAME=nvidia
     export __VK_LAYER_NV_optimus=NVIDIA_only
-    exec -a "$0" "$@"
+    exec -a "$0"
   '';
-  user="drmoscovium";
-in
-{
+  user = "drmoscovium";
+in {
 
-  imports =
-    [ # Include the results of the hardware scan.
-      ./core/hardware-configuration.nix
-      ./core/user.nix
-      ./core/boot.nix
-      ./core/hardware.nix
-      ./core/fonts.nix
-      ./core/services.nix
-    ];
-
-
+  imports = [ # Include the results of the hardware scan.
+    ./core/hardware-configuration.nix
+    ./core/user.nix
+    ./core/boot.nix
+    ./core/hardware.nix
+    ./core/fonts.nix
+    ./core/services.nix
+  ];
 
   # Adding Overlays
   nixpkgs.overlays = [
-   (import ../../overlays/discord.nix)
-   (import ../../overlays/electron.nix)
-   (import ../../overlays/dwm.nix)
+    (import ../../overlays/discord.nix)
+    (import ../../overlays/electron.nix)
+    (import ../../overlays/dwm.nix)
   ];
-
-
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -66,7 +59,6 @@ in
     LC_TIME = "en_US.UTF-8";
   };
 
-
   # Enable sound with pipewire.
   sound.enable = true;
   hardware.pulseaudio.enable = false;
@@ -78,19 +70,51 @@ in
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  
-  environment.systemPackages = with pkgs; [
-  nvidia-offload
-  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  wget
-  firefox-wayland
-  unzip
-  zip
-  git
 
-  virt-manager
-  wl-clipboard
-  electron
+  environment.sessionVariables = rec {
+    XDG_CACHE_HOME = "\${HOME}/.cache";
+    XDG_CONFIG_HOME = "\${HOME}/.config";
+    XDG_BIN_HOME = "\${HOME}/.local/bin";
+    XDG_DATA_HOME = "\${HOME}/.local/share";
+    # Steam needs this to find Proton-GE
+    STEAM_EXTRA_COMPAT_TOOLS_PATHS =
+      "\${HOME}/.steam/root/compatibilitytools.d";
+    # note: this doesn't replace PATH, it just adds this to it
+    PATH = [ "\${XDG_BIN_HOME}" ];
+  };
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall =
+      true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall =
+      true; # Open ports in the firewall for Source Dedicated Server
+  };
+
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "steam"
+      "steam-original"
+      "steam-runtime"
+    ];
+
+  environment.systemPackages = with pkgs; [
+    nvidia-offload
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    wget
+    firefox
+    unzip
+    zip
+    rPackages.TAR
+    git
+    virt-manager
+    electron
+    texlive.combined.scheme-full
+    conda
+    steam
+    xorg.xorgserver
+    xorg.xf86videonouveau
+
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -100,11 +124,7 @@ in
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-
-
-
-
-    programs.sway.enable=true;
+  #
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
@@ -122,8 +142,6 @@ in
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-
-
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -133,17 +151,14 @@ in
   system.stateVersion = "22.11"; # Did you read the comment?
 
   programs.zsh.enable = true;
-  
-  
-
 
   # TODO for docker 
   # virtualisation.docker.enable = true;
-virtualisation.libvirtd.enable = true;
-programs.dconf.enable = true;
+  virtualisation.libvirtd.enable = true;
+  programs.dconf.enable = true;
 
   nix = {
-	package = pkgs.nixFlakes;
+    package = pkgs.nixFlakes;
     settings.auto-optimise-store = true;
     extraOptions = ''
       experimental-features = nix-command flakes
@@ -160,8 +175,5 @@ programs.dconf.enable = true;
     enable = true;
     channel = "https://nixos.org/channels/nixos";
   };
-
-
-
 
 }

@@ -1,18 +1,15 @@
-{config, pkgs, lib, ...}:
+{ config, pkgs, lib, ... }:
 
 {
 
-  services = {    
+  services = {
 
     #printing service
 
     printing.enable = true;
-    
 
     # enable blueman for windo managers only
     blueman.enable = true;
-
-
 
     pipewire = {
       enable = true;
@@ -27,16 +24,14 @@
       #media-session.enable = true;
     };
 
-
-  
-    # xserver services 
+    # xserver services
     xserver = {
       layout = "us";
       xkbVariant = "";
-      videoDrivers = lib.mkDefault [ "nvidia" ];
-		  enable = true;
-		  displayManager = {
-			  lightdm = {
+      videoDrivers = lib.mkDefault ["nvidia" ];
+      enable = true;
+      displayManager = {
+        lightdm = {
           enable = true;
           greeters.gtk = {
             enable = true;
@@ -44,17 +39,15 @@
             theme.package = pkgs.nordic;
           };
         };
-		  };
-		  desktopManager.plasma5.enable = true;
- 		  libinput.enable = true;
+      };
+      desktopManager.plasma5.enable = true;
+      libinput.enable = true;
       screenSection = ''
-  Option         "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
-  Option         "AllowIndirectGLXProtocol" "off"
-  Option         "TripleBuffer" "on"
-'';
+        Option         "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
+        Option         "AllowIndirectGLXProtocol" "off"
+        Option         "TripleBuffer" "on"
+      '';
     };
-
-
 
     # dwm status
   };
